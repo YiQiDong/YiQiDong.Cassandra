@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using YiQiDong.Cassandra.Model;
 using YiQiDong.Cassandra.Utils;
+using YiQiDong.Core;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions

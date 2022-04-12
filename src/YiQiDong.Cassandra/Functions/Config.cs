@@ -1,12 +1,11 @@
 ﻿using Quick.Fields;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using YiQiDong.Cassandra.Utils;
-using YiQiDong.Core.Utils;
+using YiQiDong.Core;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions

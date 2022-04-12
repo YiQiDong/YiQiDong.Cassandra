@@ -7,6 +7,7 @@ using System.Linq;
 using YiQiDong.Cassandra.Utils;
 using System.Collections;
 using Quick.Fields;
+using YiQiDong.Core;
 
 namespace YiQiDong.Cassandra.Functions
 {

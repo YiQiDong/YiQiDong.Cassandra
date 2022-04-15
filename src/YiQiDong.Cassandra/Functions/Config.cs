@@ -1,6 +1,7 @@
 ﻿using Quick.Fields;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -187,7 +188,7 @@ namespace YiQiDong.Cassandra.Functions
 
         public override FieldForGet[] Get()
         {
-            var isReadOnly = Agent.ContainerInfo.AutoStart;
+            var isReadOnly = Agent.Instance.ContainerInfo.AutoStart;
             var list = innerGet(null, isReadOnly);
             if (!isReadOnly)
                 addSaveButton(list);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,14 +14,13 @@ namespace YiQiDong.Cassandra
 {
     public class Agent : AbstractAgent
     {
-        public static ContainerInfo ContainerInfo { get; private set; }
+        public static Agent Instance { get; private set; }
         public Process Process { get; set; }
 
-        public override void Init(ContainerInfo contentT)
+        public override void Init(ContainerInfo contentInfo)
         {
-            base.Init(contentT);
-            
-            ContainerInfo = contentT;
+            Instance = this;
+            base.Init(contentInfo);            
 
             var imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
             var containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);

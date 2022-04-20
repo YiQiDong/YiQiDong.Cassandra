@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using YiQiDong.Agent;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
@@ -44,14 +45,14 @@ namespace YiQiDong.Cassandra
                 }
                 catch (Exception ex)
                 {
-                    ConsoleOutputHandler?.Invoke($"启动容器时失败，原因：{ex}");
+                    AgentContext.Instance.LogError($"启动容器时失败，原因：{ex}");
                 }
             });
         }
 
         private void outputNotSupportOsAndArchitecture()
         {
-            ConsoleOutputHandler?.Invoke($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
+            AgentContext.Instance.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
         }
 
         private void innnerStart()
@@ -106,26 +107,26 @@ namespace YiQiDong.Cassandra
                         return;
                 }
                 //检测是否支持free命令
-                ConsoleOutputHandler?.Invoke("正在检测是否支持常用Linux命令...");
+                AgentContext.Instance.LogInfo("正在检测是否支持常用Linux命令...");
                 try
                 {
                     Process.Start("free");
-                    ConsoleOutputHandler?.Invoke("检测通过，当前系统支持常用Linux命令。");
+                    AgentContext.Instance.LogInfo("检测通过，当前系统支持常用Linux命令。");
                 }
                 catch (Exception ex)
                 {
-                    ConsoleOutputHandler?.Invoke("检测到不支持常用Linux命令，异常：" + ex.Message);
+                    AgentContext.Instance.LogWarn("检测到不支持常用Linux命令，异常：" + ex.Message);
 
                     var srcBusyboxPath = Path.Combine(imageFolder, var_JAVA_HOME, "bin", "busybox");
-                    ConsoleOutputHandler?.Invoke($"正在安装busybox...");
+                    AgentContext.Instance.LogInfo($"正在安装busybox...");
                     var desBusyboxPath = "/usr/bin/busybox";
                     File.Copy(srcBusyboxPath, desBusyboxPath, true);
                     var busyboxProcess = Process.Start(desBusyboxPath, "--install");
                     busyboxProcess.WaitForExit();
                     if (busyboxProcess.ExitCode == 0)
-                        ConsoleOutputHandler?.Invoke("安装busybox成功。");
+                        AgentContext.Instance.LogInfo("安装busybox成功。");
                     else
-                        ConsoleOutputHandler?.Invoke("安装busybox失败，退出码：" + busyboxProcess.ExitCode);
+                        AgentContext.Instance.LogWarn("安装busybox失败，退出码：" + busyboxProcess.ExitCode);
                 }
             }
             else
@@ -133,8 +134,8 @@ namespace YiQiDong.Cassandra
                 outputNotSupportOsAndArchitecture();
                 return;
             }
-            ConsoleOutputHandler?.Invoke("Process Filename：" + process_filename);
-            ConsoleOutputHandler?.Invoke("Process Arguments：" + process_arguments);
+            AgentContext.Instance.LogInfo("Process Filename：" + process_filename);
+            AgentContext.Instance.LogInfo("Process Arguments：" + process_arguments);
 
             var_JAVA_HOME = Path.Combine(imageFolder, var_JAVA_HOME);
             ProcessStartInfo psi = new ProcessStartInfo(process_filename, process_arguments);
@@ -155,7 +156,7 @@ namespace YiQiDong.Cassandra
             Process.ErrorDataReceived += Process_ErrorDataReceived;
             Process.BeginOutputReadLine();
             Process.BeginErrorReadLine();
-            ConsoleOutputHandler?.Invoke($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经启动。");
+            AgentContext.Instance.LogInfo($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经启动。");
             Process.Exited += Process_Exited;
             RaiseEvent_FunctionListChanged();
         }
@@ -164,14 +165,14 @@ namespace YiQiDong.Cassandra
         {
             if (e.Data == null)
                 return;
-            ConsoleOutputHandler?.Invoke(e.Data);
+            AgentContext.Instance.LogInfo(e.Data);
         }
 
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data == null)
                 return;
-            ConsoleOutputHandler?.Invoke(e.Data);
+            AgentContext.Instance.LogWarn(e.Data);
         }
 
         private void delayStart()
@@ -184,7 +185,7 @@ namespace YiQiDong.Cassandra
 
         private void Process_Exited(object sender, EventArgs e)
         {
-            ConsoleOutputHandler?.Invoke($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经退出，退出码：{Process.ExitCode}。");
+            AgentContext.Instance.LogInfo($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经退出，退出码：{Process.ExitCode}。");
             Process = null;
             delayStart();
         }

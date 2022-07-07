@@ -29,6 +29,7 @@ namespace YiQiDong.Cassandra
             AddFunction(new Functions.Config(imageFolder, containerFolder));
             AddFunction(new Functions.UserManage(imageFolder, containerFolder), true);
             AddFunction(new Functions.CqlQuery());
+            AddFunction(new Functions.Cleanup(imageFolder, containerFolder), true);
 
             var logsFolder = Path.Combine(containerFolder, "logs");
             if (!Directory.Exists(logsFolder))
@@ -67,7 +68,7 @@ namespace YiQiDong.Cassandra
 
             var var_JAVA_HOME = "";
             var process_filename = "";
-            var process_arguments = "";
+            var process_argument_list = new List<string>();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -76,7 +77,6 @@ namespace YiQiDong.Cassandra
                     case Architecture.X64:
                         var_JAVA_HOME = "jre_windows_x64";
                         process_filename = Path.Combine(imageFolder, "bin", "cassandra.bat");
-                        process_arguments = null;
                         break;
                     default:
                         outputNotSupportOsAndArchitecture();
@@ -90,17 +90,17 @@ namespace YiQiDong.Cassandra
                     case Architecture.X64:
                         var_JAVA_HOME = "jre_linux_x64";
                         process_filename = "sh";
-                        process_arguments = Path.Combine(imageFolder, "bin", "cassandra");
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
                         break;
                     case Architecture.Arm64:
                         var_JAVA_HOME = "jre_linux_arm64";
                         process_filename = "sh";
-                        process_arguments = Path.Combine(imageFolder, "bin", "cassandra");
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
                         break;
                     case Architecture.Arm:
                         var_JAVA_HOME = "jre_linux_arm";
                         process_filename = "sh";
-                        process_arguments = Path.Combine(imageFolder, "bin", "cassandra");
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
                         break;
                     default:
                         outputNotSupportOsAndArchitecture();
@@ -134,11 +134,14 @@ namespace YiQiDong.Cassandra
                 outputNotSupportOsAndArchitecture();
                 return;
             }
-            AgentContext.Instance.LogInfo("Process Filename：" + process_filename);
-            AgentContext.Instance.LogInfo("Process Arguments：" + process_arguments);
 
             var_JAVA_HOME = Path.Combine(imageFolder, var_JAVA_HOME);
-            ProcessStartInfo psi = new ProcessStartInfo(process_filename, process_arguments);
+            ProcessStartInfo psi = new ProcessStartInfo(process_filename);
+            foreach (var item in process_argument_list)
+                psi.ArgumentList.Add(item);
+            AgentContext.Instance.LogInfo("工作进程文件：" + process_filename);
+            AgentContext.Instance.LogInfo("工作进程参数：" + psi.Arguments);
+
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
@@ -156,7 +159,7 @@ namespace YiQiDong.Cassandra
             Process.ErrorDataReceived += Process_ErrorDataReceived;
             Process.BeginOutputReadLine();
             Process.BeginErrorReadLine();
-            AgentContext.Instance.LogInfo($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经启动。");
+            AgentContext.Instance.LogInfo($"工作进程[Id:{Process.Id},Name:{Process.ProcessName}]已经启动。");
             Process.Exited += Process_Exited;
             RaiseEvent_FunctionListChanged();
         }
@@ -185,7 +188,7 @@ namespace YiQiDong.Cassandra
 
         private void Process_Exited(object sender, EventArgs e)
         {
-            AgentContext.Instance.LogInfo($"进程[Id:{Process.Id},Name:{Process.ProcessName}]已经退出，退出码：{Process.ExitCode}。");
+            AgentContext.Instance.LogInfo($"工作进程[Id:{Process.Id},Name:{Process.ProcessName}]已经退出，退出码：{Process.ExitCode}。");
             Process = null;
             delayStart();
         }

@@ -107,7 +107,8 @@ namespace YiQiDong.Cassandra.Functions
                     foreach (var item in process_argument_list)
                         psi.ArgumentList.Add(item);
                     AgentContext.Instance.LogInfo("清理进程文件：" + process_filename);
-                    AgentContext.Instance.LogInfo("清理进程参数：" + psi.Arguments);
+                    if (psi.ArgumentList.Count > 0)
+                        AgentContext.Instance.LogInfo("清理进程参数：" + string.Join(" ", psi.ArgumentList));
 
                     psi.RedirectStandardOutput = true;
                     psi.RedirectStandardError = true;

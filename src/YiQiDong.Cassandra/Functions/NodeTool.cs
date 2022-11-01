@@ -1,8 +1,6 @@
 ﻿using Quick.Fields;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,20 +12,21 @@ using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions
 {
-    class Cleanup : AbstractFunction
+    class NodeTool : AbstractFunction
     {
-        public override string Name => "清理数据库";
+        public override string Name => "nodetool工具";
 
         public override FieldForGet[] Get()
         {
             var list = new List<FieldForGet>();
             list.Add(new FieldForGet()
             {
-                Name = "说明",
-                Description = "发送清理指令是调用命令行：nodetool cleanup和nodetool clearsnapshot，用于释放无效数据占用的磁盘空间。",
-                Type = FieldType.Alert
+                Id = "Arguments",
+                Name = "参数",
+                Description = "执行nodetool的参数部分",
+                Type = FieldType.InputText
             });
-            list.Add(new FieldForGet() { Id = "Execute", Name = "发送清理指令", Type = FieldType.Button });
+            list.Add(new FieldForGet() { Id = "Execute", Name = "发送指令", Type = FieldType.Button });
             return list.ToArray();
         }
 
@@ -38,16 +37,14 @@ namespace YiQiDong.Cassandra.Functions
             {
                 try
                 {
-                    AgentContext.Instance.LogInfo($"发送清理命令：nodetool cleanup");
-                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "cleanup");
-                    AgentContext.Instance.LogInfo($"发送清理快照命令：nodetool clearsnapshot");
-                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "clearsnapshot");
-                    AgentContext.Instance.LogInfo($"清理完成");
+                    var arguments = request.GetFieldValue("Arguments");
+                    AgentContext.Instance.LogInfo($"发送命令：nodetool {arguments}");
+                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, arguments);
 
                     list.Add(new FieldForGet()
                     {
                         Name = "成功",
-                        Description = $"发送清理指令成功！",
+                        Description = $"发送指令成功！",
                         Type = FieldType.MessageBox
                     });
                 }
@@ -56,7 +53,7 @@ namespace YiQiDong.Cassandra.Functions
                     list.Add(new FieldForGet()
                     {
                         Name = "错误",
-                        Description = "发送清理指令失败！原因：" + ExceptionUtils.GetExceptionMessage(ex),
+                        Description = "发送指令失败！原因：" + ExceptionUtils.GetExceptionMessage(ex),
                         Type = FieldType.MessageBox
                     });
                 }

@@ -17,22 +17,27 @@ namespace YiQiDong.Cassandra
         public static Agent Instance { get; private set; }
         public Process Process { get; set; }
 
+        private string imageFolder;
+        private string containerFolder;
+
         public override void Init(ContainerInfo contentInfo)
         {
             Instance = this;
             base.Init(contentInfo);
 
-            var imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
-            var containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
+            imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
+            containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
 
             AddFunction(new Functions.Config(imageFolder, containerFolder));
             AddFunction(new Functions.UserManage(imageFolder, containerFolder), true);
             AddFunction(new Functions.CqlQuery());
-            AddFunction(new Functions.Cleanup(imageFolder, containerFolder), true);
+            AddFunction(new Functions.Cleanup(), true);
+            AddFunction(new Functions.NodeTool(), true);
 
             var logsFolder = Path.Combine(containerFolder, "logs");
             if (!Directory.Exists(logsFolder))
                 Directory.CreateDirectory(logsFolder);
+            beginCleanup();
         }
 
         public override void Start()
@@ -53,6 +58,27 @@ namespace YiQiDong.Cassandra
         private void outputNotSupportOsAndArchitecture()
         {
             AgentContext.Instance.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
+        }
+
+        private void beginCleanup()
+        {
+            var nextExcuteTime = DateTime.Now;
+            nextExcuteTime = new DateTime(nextExcuteTime.Year, nextExcuteTime.Month, nextExcuteTime.Day, 0, 0, 0);
+            nextExcuteTime = nextExcuteTime.AddDays(1);
+            AgentContext.Instance.LogInfo($"将于[{nextExcuteTime}]开始执行清理操作.");
+            Task.Delay(nextExcuteTime - DateTime.Now).ContinueWith(t =>
+            {
+                //如果容器当前正在运行
+                if (ContainerInfo.AutoStart)
+                {
+                    AgentContext.Instance.LogInfo($"发送清理命令：nodetool cleanup");
+                    RunNodeTool(AgentContext.Instance.LogInfo, "cleanup");
+                    AgentContext.Instance.LogInfo($"发送清理快照命令：nodetool clearsnapshot");
+                    RunNodeTool(AgentContext.Instance.LogInfo, "clearsnapshot");
+                    AgentContext.Instance.LogInfo($"清理完成");
+                }
+                beginCleanup();
+            });
         }
 
         private void innnerStart()
@@ -170,6 +196,82 @@ namespace YiQiDong.Cassandra
             {
                 AgentContext.Instance.LogError("启动工作进程时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
             }
+        }
+
+        public void RunNodeTool(Action<string> pushLog, params string[] args)
+        {
+            var var_JAVA_HOME = "";
+            var process_filename = "";
+            var process_argument_list = new List<string>();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                switch (RuntimeInformation.OSArchitecture)
+                {
+                    case Architecture.X64:
+                        var_JAVA_HOME = "jre_windows_x64";
+                        process_filename = Path.Combine(imageFolder, "bin", "nodetool.bat");
+                        break;
+                    default:
+                        outputNotSupportOsAndArchitecture();
+                        break;
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                switch (RuntimeInformation.OSArchitecture)
+                {
+                    case Architecture.X64:
+                        var_JAVA_HOME = "jre_linux_x64";
+                        process_filename = "sh";
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        break;
+                    case Architecture.Arm64:
+                        var_JAVA_HOME = "jre_linux_arm64";
+                        process_filename = "sh";
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        break;
+                    case Architecture.Arm:
+                        var_JAVA_HOME = "jre_linux_arm";
+                        process_filename = "sh";
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        break;
+                    default:
+                        outputNotSupportOsAndArchitecture();
+                        break;
+                }
+            }
+            else
+            {
+                outputNotSupportOsAndArchitecture();
+            }
+
+            if (args != null && args.Length > 0)
+                process_argument_list.AddRange(args);
+
+            var_JAVA_HOME = Path.Combine(imageFolder, var_JAVA_HOME);
+            ProcessStartInfo psi = new ProcessStartInfo(process_filename);
+            foreach (var item in process_argument_list)
+                psi.ArgumentList.Add(item);
+
+            psi.RedirectStandardOutput = true;
+            psi.RedirectStandardError = true;
+            psi.RedirectStandardInput = true;
+            psi.UseShellExecute = false;
+            psi.WorkingDirectory = containerFolder;
+            var path = psi.EnvironmentVariables["PATH"];
+            path += Path.PathSeparator + Path.Combine(var_JAVA_HOME, "bin");
+            psi.EnvironmentVariables["PATH"] = path;
+            psi.EnvironmentVariables["JAVA_HOME"] = var_JAVA_HOME;
+            psi.EnvironmentVariables["CONTAINER_HOME"] = containerFolder;
+
+            var process = Process.Start(psi);
+            process.EnableRaisingEvents = true;
+            process.OutputDataReceived += (sender, e) => pushLog(e.Data);
+            process.ErrorDataReceived += (sender, e) => pushLog(e.Data);
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
         }
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)

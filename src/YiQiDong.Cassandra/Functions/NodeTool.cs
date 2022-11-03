@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using YiQiDong.Agent;
@@ -21,6 +20,19 @@ namespace YiQiDong.Cassandra.Functions
             var list = new List<FieldForGet>();
             list.Add(new FieldForGet()
             {
+                Id = "CommonCommands",
+                Name = "常用指令",
+                Type = FieldType.InputSelect,
+                PostOnChanged = true,
+                InputSelect_Options = new Dictionary<string, string>()
+                {
+                    ["repair"] = "修复",
+                    ["cleanup"] = "清理",
+                    ["clearsnapshot"] = "清理快照"
+                }
+            });
+            list.Add(new FieldForGet()
+            {
                 Id = "Arguments",
                 Name = "参数",
                 Description = "执行nodetool的参数部分",
@@ -33,13 +45,17 @@ namespace YiQiDong.Cassandra.Functions
         public override FieldForGet[] Post(FunctionRequest request)
         {
             var list = Get().ToList();
-            if (request.IsFieldIdsMatch("Execute"))
+            if (request.IsFieldIdsMatch("CommonCommands"))
+            {
+                list[1].Value = request.GetFieldValue("CommonCommands");
+            }
+            else if (request.IsFieldIdsMatch("Execute"))
             {
                 try
                 {
                     var arguments = request.GetFieldValue("Arguments");
                     AgentContext.Instance.LogInfo($"发送命令：nodetool {arguments}");
-                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, arguments);
+                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
                     list.Add(new FieldForGet()
                     {

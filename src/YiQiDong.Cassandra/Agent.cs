@@ -31,7 +31,6 @@ namespace YiQiDong.Cassandra
             AddFunction(new Functions.Config(imageFolder, containerFolder));
             AddFunction(new Functions.UserManage(imageFolder, containerFolder), true);
             AddFunction(new Functions.CqlQuery());
-            AddFunction(new Functions.Cleanup(), true);
             AddFunction(new Functions.NodeTool(), true);
 
             var logsFolder = Path.Combine(containerFolder, "logs");

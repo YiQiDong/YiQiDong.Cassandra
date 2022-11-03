@@ -37,7 +37,6 @@ namespace YiQiDong.Cassandra
             var logsFolder = Path.Combine(containerFolder, "logs");
             if (!Directory.Exists(logsFolder))
                 Directory.CreateDirectory(logsFolder);
-            beginCleanup();
         }
 
         public override void Start()
@@ -58,27 +57,6 @@ namespace YiQiDong.Cassandra
         private void outputNotSupportOsAndArchitecture()
         {
             AgentContext.Instance.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
-        }
-
-        private void beginCleanup()
-        {
-            var nextExcuteTime = DateTime.Now;
-            nextExcuteTime = new DateTime(nextExcuteTime.Year, nextExcuteTime.Month, nextExcuteTime.Day, 0, 0, 0);
-            nextExcuteTime = nextExcuteTime.AddDays(1);
-            AgentContext.Instance.LogInfo($"将于[{nextExcuteTime}]开始执行清理操作.");
-            Task.Delay(nextExcuteTime - DateTime.Now).ContinueWith(t =>
-            {
-                //如果容器当前正在运行
-                if (ContainerInfo.AutoStart)
-                {
-                    AgentContext.Instance.LogInfo($"发送清理命令：nodetool cleanup");
-                    RunNodeTool(AgentContext.Instance.LogInfo, "cleanup");
-                    AgentContext.Instance.LogInfo($"发送清理快照命令：nodetool clearsnapshot");
-                    RunNodeTool(AgentContext.Instance.LogInfo, "clearsnapshot");
-                    AgentContext.Instance.LogInfo($"清理完成");
-                }
-                beginCleanup();
-            });
         }
 
         private void innnerStart()

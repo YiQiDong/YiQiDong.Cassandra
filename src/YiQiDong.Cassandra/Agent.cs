@@ -29,13 +29,9 @@ namespace YiQiDong.Cassandra
             containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
 
             AddFunction(new Functions.Config(imageFolder, containerFolder));
-            AddFunction(new Functions.UserManage(imageFolder, containerFolder), true);
+            AddFunction(new Functions.UserManage(imageFolder), true);
             AddFunction(new Functions.CqlQuery());
             AddFunction(new Functions.NodeTool(), true);
-
-            var logsFolder = Path.Combine(containerFolder, "logs");
-            if (!Directory.Exists(logsFolder))
-                Directory.CreateDirectory(logsFolder);
         }
 
         public override void Start()
@@ -66,7 +62,7 @@ namespace YiQiDong.Cassandra
                 return;
 
             var imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
-            var containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
+            var dataFolder = Functions.Config.Instance.GetCassandraDataFolder();
 
             var var_JAVA_HOME = "";
             var process_filename = "";
@@ -151,12 +147,12 @@ namespace YiQiDong.Cassandra
                 psi.RedirectStandardError = true;
                 psi.RedirectStandardInput = true;
                 psi.UseShellExecute = false;
-                psi.WorkingDirectory = containerFolder;
+                psi.WorkingDirectory = dataFolder;
                 var path = psi.EnvironmentVariables["PATH"];
                 path += Path.PathSeparator + Path.Combine(var_JAVA_HOME, "bin");
                 psi.EnvironmentVariables["PATH"] = path;
                 psi.EnvironmentVariables["JAVA_HOME"] = var_JAVA_HOME;
-                psi.EnvironmentVariables["CONTAINER_HOME"] = containerFolder;
+                psi.EnvironmentVariables["CONTAINER_HOME"] = dataFolder;
 
                 AgentContext.Instance.LogInfo("正在启动工作进程...");
                 Process = Process.Start(psi);

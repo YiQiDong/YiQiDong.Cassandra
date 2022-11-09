@@ -54,14 +54,21 @@ namespace YiQiDong.Cassandra.Functions
                 try
                 {
                     var arguments = request.GetFieldValue("Arguments");
-                    AgentContext.Instance.LogInfo($"发送命令：nodetool {arguments}");
-                    Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                    if (string.IsNullOrEmpty(arguments))
+                        throw new Exception("请输入参数！");
+                    
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($">nodetool {arguments}");
+                    Agent.Instance.RunNodeTool(
+                        log => sb.AppendLine(log),
+                        arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
                     list.Add(new FieldForGet()
                     {
-                        Name = "成功",
-                        Description = $"发送指令成功！",
-                        Type = FieldType.MessageBox
+                        Name = "输出",
+                        Description = sb.ToString(),
+                        Type = FieldType.Alert,
+                        Html_Class = "alert-secondary"
                     });
                 }
                 catch (Exception ex)
@@ -70,7 +77,8 @@ namespace YiQiDong.Cassandra.Functions
                     {
                         Name = "错误",
                         Description = "发送指令失败！原因：" + ExceptionUtils.GetExceptionMessage(ex),
-                        Type = FieldType.MessageBox
+                        Type = FieldType.Alert,
+                        Html_Class = "alert-danger"
                     });
                 }
             }

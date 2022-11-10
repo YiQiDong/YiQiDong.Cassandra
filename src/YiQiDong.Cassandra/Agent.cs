@@ -18,7 +18,7 @@ namespace YiQiDong.Cassandra
         public Process Process { get; set; }
 
         private string imageFolder;
-        private string containerFolder;
+        public string ContainerFolder { get; private set; }
 
         public override void Init(ContainerInfo contentInfo)
         {
@@ -26,12 +26,13 @@ namespace YiQiDong.Cassandra
             base.Init(contentInfo);
 
             imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
-            containerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
+            ContainerFolder = ContainerPathUtils.GetContainerFolder(ContainerInfo.Id);
 
-            AddFunction(new Functions.Config(imageFolder, containerFolder));
+            AddFunction(new Functions.Config(imageFolder, ContainerFolder));
             AddFunction(new Functions.UserManage(imageFolder), true);
             AddFunction(new Functions.CqlQuery());
             AddFunction(new Functions.NodeTool(), true);
+            AddFunction(new Functions.AutoCleanup(ContainerFolder), true);
         }
 
         public override void Start()
@@ -41,6 +42,7 @@ namespace YiQiDong.Cassandra
                 try
                 {
                     innnerStart();
+                    Core.AutoCleanupManager.Instance.Init();
                 }
                 catch (Exception ex)
                 {
@@ -231,12 +233,12 @@ namespace YiQiDong.Cassandra
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;
-            psi.WorkingDirectory = containerFolder;
+            psi.WorkingDirectory = ContainerFolder;
             var path = psi.EnvironmentVariables["PATH"];
             path += Path.PathSeparator + Path.Combine(var_JAVA_HOME, "bin");
             psi.EnvironmentVariables["PATH"] = path;
             psi.EnvironmentVariables["JAVA_HOME"] = var_JAVA_HOME;
-            psi.EnvironmentVariables["CONTAINER_HOME"] = containerFolder;
+            psi.EnvironmentVariables["CONTAINER_HOME"] = ContainerFolder;
 
             var process = Process.Start(psi);
             process.EnableRaisingEvents = true;
@@ -281,6 +283,7 @@ namespace YiQiDong.Cassandra
 
         public override void Stop()
         {
+            Core.AutoCleanupManager.Instance.Stop();
             RaiseEvent_FunctionListChanged();
             if (Process == null)
                 return;

@@ -9,7 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="CassandraCSharpDriver" Version="3.18.0" />
-    <PackageReference Include="YiQiDong.Agent" Version="2.2.13" />
+    <PackageReference Include="ncrontab" Version="3.3.1" />
+    <PackageReference Include="YiQiDong.Agent" Version="2.2.14" />
   </ItemGroup>
 
   <ItemGroup>

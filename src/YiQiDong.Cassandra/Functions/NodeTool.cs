@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using YiQiDong.Agent;
 using YiQiDong.Core;
@@ -67,26 +68,50 @@ namespace YiQiDong.Cassandra.Functions
                         throw new Exception("请输入参数！");
                     var argumentsSegments = arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                    var resultFile = System.IO.Path.Combine(containerFolder, $"{argumentsSegments[0]}_执行结果_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.log");
+                    var resultFile = System.IO.Path.Combine(containerFolder, $"执行结果_{argumentsSegments[0]}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.log");
                     StringBuilder sb = new StringBuilder();
                     AgentContext.Instance.LogInfo($"开始执行命令：nodetool {arguments}");
                     sb.AppendLine($">nodetool {arguments}");
-                    Task.Run(() =>
+                    bool waitResult = false;
+                    var executeTask = Task.Run(() =>
                     {
                         Agent.Instance.RunNodeTool(
                         log => sb.AppendLine(log),
                         argumentsSegments);
-                        File.WriteAllText(resultFile, sb.ToString());
-                        AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}，执行结果输出文件：{resultFile}");
                     });
-
-                    list.Add(new FieldForGet()
+                    waitResult = executeTask.Wait(2000);
+                    executeTask.ContinueWith(t =>
                     {
-                        Name = "成功",
-                        Description = $"发送指令成功！执行完成后结果会输出到文件：{resultFile}",
-                        Type = FieldType.Alert,
-                        Html_Class = "alert-secondary"
+                        if (waitResult)
+                        {
+                            AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}");
+                        }
+                        else
+                        {
+                            File.WriteAllText(resultFile, sb.ToString());
+                            AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}，执行结果输出文件：{resultFile}");
+                        }
                     });
+                    if (waitResult)
+                    {
+                        list.Add(new FieldForGet()
+                        {
+                            Name = "执行结果",
+                            Description = sb.ToString(),
+                            Type = FieldType.Alert,
+                            Html_Class = "alert-secondary"
+                        });
+                    }
+                    else
+                    {
+                        list.Add(new FieldForGet()
+                        {
+                            Name = "指令执行中",
+                            Description = $"指令正在执行，执行完成后结果会输出到文件：{resultFile}",
+                            Type = FieldType.Alert,
+                            Html_Class = "alert-secondary"
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {

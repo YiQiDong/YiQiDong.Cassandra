@@ -1,6 +1,8 @@
-﻿using Quick.Fields;
+﻿using Cassandra.DataStax.Graph;
+using Quick.Fields;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +15,13 @@ namespace YiQiDong.Cassandra.Functions
 {
     class NodeTool : AbstractFunction
     {
+        private string containerFolder;
+
+        public NodeTool(string containerFolder)
+        {
+            this.containerFolder = containerFolder;
+        }
+
         public override string Name => "nodetool工具";
 
         public override FieldForGet[] Get()
@@ -56,17 +65,25 @@ namespace YiQiDong.Cassandra.Functions
                     var arguments = request.GetFieldValue("Arguments");
                     if (string.IsNullOrEmpty(arguments))
                         throw new Exception("请输入参数！");
-                    
+                    var argumentsSegments = arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    var resultFile = System.IO.Path.Combine(containerFolder, $"{argumentsSegments[0]}_执行结果_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.log");
                     StringBuilder sb = new StringBuilder();
+                    AgentContext.Instance.LogInfo($"开始执行命令：nodetool {arguments}");
                     sb.AppendLine($">nodetool {arguments}");
-                    Agent.Instance.RunNodeTool(
+                    Task.Run(() =>
+                    {
+                        Agent.Instance.RunNodeTool(
                         log => sb.AppendLine(log),
-                        arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                        argumentsSegments);
+                        File.WriteAllText(resultFile, sb.ToString());
+                        AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}，执行结果输出文件：{resultFile}");
+                    });
 
                     list.Add(new FieldForGet()
                     {
-                        Name = "输出",
-                        Description = sb.ToString(),
+                        Name = "成功",
+                        Description = $"发送指令成功！执行完成后结果会输出到文件：{resultFile}",
                         Type = FieldType.Alert,
                         Html_Class = "alert-secondary"
                     });

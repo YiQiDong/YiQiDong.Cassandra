@@ -11,6 +11,14 @@ namespace WinNodetool
             InitializeComponent();
         }
 
+        private Dictionary<string, string> commonCommands = new Dictionary<string, string>()
+        {
+            ["help"] ="帮助",
+            ["version"] = "版本号",
+            ["listsnapshots"] = "列出快照",
+            ["compactionstats"] = "压实状态",
+            ["compactionhistory"] = "压实历史",
+        };
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -20,6 +28,22 @@ namespace WinNodetool
                 config = new ConfigModel();
             txtCassandraImageDir.Text = config.ImageDir;
             txtCassandraContainerDir.Text = config.ContainerDir;
+
+            foreach (var item in commonCommands)
+            {
+                var btn = new Button();
+                btn.Size = new Size(150, 46);
+                btn.Text = item.Value;
+                btn.Tag = item.Key;
+                btn.Click += CommonCommandBtn_Click;
+                flpCommonCommands.Controls.Add(btn);
+            }
+        }
+
+        private void CommonCommandBtn_Click(object sender, EventArgs e)
+        {
+            var btn = (Button)sender;
+            txtArguments.Text = btn.Tag.ToString();
         }
 
         private Queue<string> logQueue = new Queue<string>();

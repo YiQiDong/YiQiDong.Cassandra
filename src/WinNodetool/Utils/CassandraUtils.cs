@@ -74,16 +74,14 @@ namespace WinNodetool.Core
 
             var_JAVA_HOME = Path.Combine(imageFolder, var_JAVA_HOME);
             ProcessStartInfo psi = new ProcessStartInfo(process_filename);
-            psi.Arguments = string.Join(" ", process_argument_list);
-            /*
-             * .NET Framework 4.5不支持这样的写法
+            
             foreach (var item in process_argument_list)
                 psi.ArgumentList.Add(item);
-            */
 
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
+            psi.CreateNoWindow = true;
             psi.UseShellExecute = false;
             psi.WorkingDirectory = containerFolder;
             var path = psi.EnvironmentVariables["PATH"];

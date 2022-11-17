@@ -40,6 +40,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.gbResult = new System.Windows.Forms.GroupBox();
             this.txtLogs = new System.Windows.Forms.TextBox();
+            this.flpCommonCommands = new System.Windows.Forms.FlowLayoutPanel();
+            this.label4 = new System.Windows.Forms.Label();
             this.gbOperate.SuspendLayout();
             this.gbResult.SuspendLayout();
             this.SuspendLayout();
@@ -48,10 +50,12 @@
             // 
             this.gbOperate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbOperate.Controls.Add(this.flpCommonCommands);
             this.gbOperate.Controls.Add(this.btnRun);
             this.gbOperate.Controls.Add(this.btnSelectCassandraContainerDir);
             this.gbOperate.Controls.Add(this.txtArguments);
             this.gbOperate.Controls.Add(this.btnSelectCassandraImageDir);
+            this.gbOperate.Controls.Add(this.label4);
             this.gbOperate.Controls.Add(this.label3);
             this.gbOperate.Controls.Add(this.txtCassandraContainerDir);
             this.gbOperate.Controls.Add(this.label2);
@@ -59,7 +63,7 @@
             this.gbOperate.Controls.Add(this.label1);
             this.gbOperate.Location = new System.Drawing.Point(12, 12);
             this.gbOperate.Name = "gbOperate";
-            this.gbOperate.Size = new System.Drawing.Size(1128, 206);
+            this.gbOperate.Size = new System.Drawing.Size(1128, 286);
             this.gbOperate.TabIndex = 0;
             this.gbOperate.TabStop = false;
             this.gbOperate.Text = "操作";
@@ -157,9 +161,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbResult.Controls.Add(this.txtLogs);
-            this.gbResult.Location = new System.Drawing.Point(12, 224);
+            this.gbResult.Location = new System.Drawing.Point(12, 304);
             this.gbResult.Name = "gbResult";
-            this.gbResult.Size = new System.Drawing.Size(1124, 794);
+            this.gbResult.Size = new System.Drawing.Size(1124, 714);
             this.gbResult.TabIndex = 1;
             this.gbResult.TabStop = false;
             this.gbResult.Text = "日志";
@@ -172,8 +176,27 @@
             this.txtLogs.Name = "txtLogs";
             this.txtLogs.ReadOnly = true;
             this.txtLogs.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogs.Size = new System.Drawing.Size(1118, 757);
+            this.txtLogs.Size = new System.Drawing.Size(1118, 677);
             this.txtLogs.TabIndex = 0;
+            // 
+            // flpCommonCommands
+            // 
+            this.flpCommonCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flpCommonCommands.Location = new System.Drawing.Point(166, 187);
+            this.flpCommonCommands.Name = "flpCommonCommands";
+            this.flpCommonCommands.Size = new System.Drawing.Size(801, 93);
+            this.flpCommonCommands.TabIndex = 3;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(23, 187);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(134, 31);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "常用命令：";
             // 
             // MainForm
             // 
@@ -208,5 +231,7 @@
         private Label label1;
         private GroupBox gbResult;
         private TextBox txtLogs;
+        private FlowLayoutPanel flpCommonCommands;
+        private Label label4;
     }
 }

@@ -29,10 +29,12 @@
         private void InitializeComponent()
         {
             this.gbOperate = new System.Windows.Forms.GroupBox();
+            this.flpCommonCommands = new System.Windows.Forms.FlowLayoutPanel();
             this.btnRun = new System.Windows.Forms.Button();
             this.btnSelectCassandraContainerDir = new System.Windows.Forms.Button();
             this.txtArguments = new System.Windows.Forms.TextBox();
             this.btnSelectCassandraImageDir = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtCassandraContainerDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -40,8 +42,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.gbResult = new System.Windows.Forms.GroupBox();
             this.txtLogs = new System.Windows.Forms.TextBox();
-            this.flpCommonCommands = new System.Windows.Forms.FlowLayoutPanel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.btnClearLogs = new System.Windows.Forms.Button();
             this.gbOperate.SuspendLayout();
             this.gbResult.SuspendLayout();
             this.SuspendLayout();
@@ -50,6 +51,7 @@
             // 
             this.gbOperate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbOperate.Controls.Add(this.btnClearLogs);
             this.gbOperate.Controls.Add(this.flpCommonCommands);
             this.gbOperate.Controls.Add(this.btnRun);
             this.gbOperate.Controls.Add(this.btnSelectCassandraContainerDir);
@@ -67,6 +69,16 @@
             this.gbOperate.TabIndex = 0;
             this.gbOperate.TabStop = false;
             this.gbOperate.Text = "操作";
+            // 
+            // flpCommonCommands
+            // 
+            this.flpCommonCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flpCommonCommands.Location = new System.Drawing.Point(166, 187);
+            this.flpCommonCommands.Name = "flpCommonCommands";
+            this.flpCommonCommands.Size = new System.Drawing.Size(801, 93);
+            this.flpCommonCommands.TabIndex = 3;
             // 
             // btnRun
             // 
@@ -109,6 +121,15 @@
             this.btnSelectCassandraImageDir.Text = "..";
             this.btnSelectCassandraImageDir.UseVisualStyleBackColor = true;
             this.btnSelectCassandraImageDir.Click += new System.EventHandler(this.btnSelectCassandraImageDir_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(23, 187);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(134, 31);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "常用命令：";
             // 
             // label3
             // 
@@ -179,24 +200,16 @@
             this.txtLogs.Size = new System.Drawing.Size(1118, 677);
             this.txtLogs.TabIndex = 0;
             // 
-            // flpCommonCommands
+            // btnClearLogs
             // 
-            this.flpCommonCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.flpCommonCommands.Location = new System.Drawing.Point(166, 187);
-            this.flpCommonCommands.Name = "flpCommonCommands";
-            this.flpCommonCommands.Size = new System.Drawing.Size(801, 93);
-            this.flpCommonCommands.TabIndex = 3;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 187);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(134, 31);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "常用命令：";
+            this.btnClearLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearLogs.Location = new System.Drawing.Point(974, 234);
+            this.btnClearLogs.Name = "btnClearLogs";
+            this.btnClearLogs.Size = new System.Drawing.Size(150, 46);
+            this.btnClearLogs.TabIndex = 4;
+            this.btnClearLogs.Text = "清空日志";
+            this.btnClearLogs.UseVisualStyleBackColor = true;
+            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
             // 
             // MainForm
             // 
@@ -233,5 +246,6 @@
         private TextBox txtLogs;
         private FlowLayoutPanel flpCommonCommands;
         private Label label4;
+        private Button btnClearLogs;
     }
 }

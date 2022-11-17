@@ -13,7 +13,7 @@ namespace WinNodetool
 
         private Dictionary<string, string> commonCommands = new Dictionary<string, string>()
         {
-            ["help"] ="帮助",
+            ["help"] = "帮助",
             ["version"] = "版本号",
             ["listsnapshots"] = "列出快照",
             ["compactionstats"] = "压实状态",
@@ -32,7 +32,7 @@ namespace WinNodetool
             foreach (var item in commonCommands)
             {
                 var btn = new Button();
-                btn.Size = new Size(150, 46);
+                btn.Size = btnRun.Size;
                 btn.Text = item.Value;
                 btn.Tag = item.Key;
                 btn.Click += CommonCommandBtn_Click;
@@ -52,9 +52,6 @@ namespace WinNodetool
             this.BeginInvoke(new Action(() =>
             {
                 logQueue.Enqueue(log);
-                //最多显示1000行日志
-                while (logQueue.Count > 1000)
-                    logQueue.Dequeue();
                 txtLogs.Lines = logQueue.ToArray();
                 txtLogs.Select(txtLogs.TextLength, 0);
                 txtLogs.ScrollToCaret();
@@ -118,6 +115,12 @@ namespace WinNodetool
             {
                 gbOperate.Enabled = true;
             }
+        }
+
+        private void btnClearLogs_Click(object sender, EventArgs e)
+        {
+            logQueue.Clear();
+            pushLog($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} 已清空日志。");
         }
     }
 }

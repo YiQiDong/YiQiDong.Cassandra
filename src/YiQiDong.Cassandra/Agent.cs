@@ -64,7 +64,7 @@ namespace YiQiDong.Cassandra
                 return;
 
             var imageFolder = ImagePathUtils.GetImageFolder(ContainerInfo.ImageId);
-            var dataFolder = Functions.Config.Instance.GetCassandraDataFolder();
+            var dataFolder = Functions.Config.Instance.GetDataFolder();
 
             var var_JAVA_HOME = "";
             var process_filename = "";

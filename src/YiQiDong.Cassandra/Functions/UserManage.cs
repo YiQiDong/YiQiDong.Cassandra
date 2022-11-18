@@ -28,7 +28,7 @@ namespace YiQiDong.Cassandra.Functions
         {
             if (_userInfoList == null)
             {
-                var containerUserInfosFile = Path.Combine(Config.Instance.GetCassandraDataFolder(), USERINFOS_FILE);
+                var containerUserInfosFile = Path.Combine(Config.Instance.GetDataFolder(), USERINFOS_FILE);
                 if (!File.Exists(containerUserInfosFile))
                 {
                     var folder = Path.GetDirectoryName(containerUserInfosFile);
@@ -39,7 +39,7 @@ namespace YiQiDong.Cassandra.Functions
                         File.Copy(imageUserInfosFile, containerUserInfosFile, true);
                 }
 
-                var userInfoFile = Path.Combine(Config.Instance.GetCassandraDataFolder(), USERINFOS_FILE);
+                var userInfoFile = Path.Combine(Config.Instance.GetDataFolder(), USERINFOS_FILE);
                 var userInfoContent = File.ReadAllText(userInfoFile);
                 _userInfoList = JsonConvert.DeserializeObject<List<UserInfo>>(userInfoContent);
             }
@@ -54,7 +54,7 @@ namespace YiQiDong.Cassandra.Functions
 
         private void SaveUserInfos()
         {
-            var userInfoFile = Path.Combine(Config.Instance.GetCassandraDataFolder(), USERINFOS_FILE);
+            var userInfoFile = Path.Combine(Config.Instance.GetDataFolder(), USERINFOS_FILE);
             File.WriteAllText(userInfoFile, JsonConvert.SerializeObject(GetUserInfoList()), Encoding.UTF8);
         }
 

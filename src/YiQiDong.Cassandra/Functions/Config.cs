@@ -28,10 +28,10 @@ namespace YiQiDong.Cassandra.Functions
             Instance = this;
             this.imageFolder = imageFolder;
             this.containerFolder = containerFolder;
-            RefreshProperties(GetCassandraDataFolder());
+            RefreshProperties(GetDataFolder());
         }
 
-        private string GetCassandraDataFolder_ForConfig()
+        private string GetDataFolder_ForConfig()
         {
             var dataFolderFile = Path.Combine(containerFolder, DATA_FOLDER_CONFIG_FILE);
             string dataFolder = null;
@@ -44,9 +44,9 @@ namespace YiQiDong.Cassandra.Functions
             return dataFolder;
         }
 
-        public string GetCassandraDataFolder()
+        public string GetDataFolder()
         {
-            var dataFolder = GetCassandraDataFolder_ForConfig();
+            var dataFolder = GetDataFolder_ForConfig();
             if (string.IsNullOrEmpty(dataFolder))
                 dataFolder = containerFolder;
             return dataFolder;
@@ -93,7 +93,7 @@ namespace YiQiDong.Cassandra.Functions
             string tmpKey;
 
             tmpKey = "DataFolder";
-            var dataFolder = request == null ? GetCassandraDataFolder_ForConfig() : request.GetFieldValue("tab", "Basic", tmpKey);
+            var dataFolder = request == null ? GetDataFolder_ForConfig() : request.GetFieldValue("tab", "Basic", tmpKey);
             var isDataFolderExists = string.IsNullOrEmpty(dataFolder) || Directory.Exists(dataFolder);
             basicFieldChildren.Add(new FieldForGet()
             {

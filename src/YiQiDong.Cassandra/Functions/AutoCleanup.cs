@@ -15,7 +15,7 @@ namespace YiQiDong.Cassandra.Functions
 {
     class AutoCleanup : AbstractFunction
     {
-        public override string Name => "定时清理";
+        public override string Name => "定时清理快照";
 
         private string containerFolder;
         public AutoCleanup(string containerFolder)

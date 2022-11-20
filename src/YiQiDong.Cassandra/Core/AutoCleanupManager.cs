@@ -56,19 +56,18 @@ namespace YiQiDong.Cassandra.Core
                 if (DateTime.Now >= nextOccurrenceTime)
                 {
                     //开始工作
-                    AgentContext.Instance.LogInfo($"[定时清理管理器]开始清理。。。");
+                    AgentContext.Instance.LogInfo($"[定时清理快照]开始清理快照。。。");
                     if (Agent.Instance.ContainerInfo.AutoStart)
                     {
-                        Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "cleanup");
                         Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "clearsnapshot");
                     }
                     else
                     {
-                        AgentContext.Instance.LogInfo("[定时清理管理器]容器当前未运行，已跳过此次清理。");
+                        AgentContext.Instance.LogInfo("[定时清理快照]容器当前未运行，已跳过此次清理。");
                     }
                     //设置下一次触发时间
                     nextOccurrenceTime = crontabSchedule.GetNextOccurrence(DateTime.Now);
-                    AgentContext.Instance.LogInfo($"[定时清理管理器]清理完成，下次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
+                    AgentContext.Instance.LogInfo($"[定时清理快照]清理快照完成，下次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
                 }
                 beginCleanup(token);
             });

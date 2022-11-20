@@ -17,6 +17,6 @@ namespace YiQiDong.Cassandra.Core
         /// <summary>
         /// 触发时机
         /// </summary>
-        public string Trigger { get; set; } = "0 0 * * *";
+        public string Trigger { get; set; } = "0 1 * * *";
     }
 }

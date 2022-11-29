@@ -14,16 +14,16 @@ using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions
 {
-    class NodeTool : AbstractFunction
+    class CassandraTool : AbstractFunction
     {
         private string containerFolder;
 
-        public NodeTool(string containerFolder)
+        public CassandraTool(string containerFolder)
         {
             this.containerFolder = containerFolder;
         }
 
-        public override string Name => "nodetool工具";
+        public override string Name => "Cassandra工具";
 
         public override FieldForGet[] Get()
         {
@@ -36,16 +36,16 @@ namespace YiQiDong.Cassandra.Functions
                 PostOnChanged = true,
                 InputSelect_Options = new Dictionary<string, string>()
                 {
-                    ["repair"] = "修复",
-                    ["cleanup"] = "清理",
-                    ["clearsnapshot"] = "清理快照"
+                    ["nodetool repair"] = "修复",
+                    ["nodetool cleanup"] = "清理",
+                    ["nodetool clearsnapshot"] = "清理快照"
                 }
             });
             list.Add(new FieldForGet()
             {
                 Id = "Arguments",
-                Name = "参数",
-                Description = "执行nodetool的参数部分",
+                Name = "命令",
+                Description = "Cassandra命令与参数",
                 Type = FieldType.InputText
             });
             list.Add(new FieldForGet() { Id = "Execute", Name = "发送指令", Type = FieldType.Button });
@@ -65,13 +65,13 @@ namespace YiQiDong.Cassandra.Functions
                 {
                     var arguments = request.GetFieldValue("Arguments");
                     if (string.IsNullOrEmpty(arguments))
-                        throw new Exception("请输入参数！");
+                        throw new Exception("请输入命令与参数！");
                     var argumentsSegments = arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     var resultFile = System.IO.Path.Combine(containerFolder, $"执行结果_{argumentsSegments[0]}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.log");
                     StringBuilder sb = new StringBuilder();
-                    AgentContext.Instance.LogInfo($"开始执行命令：nodetool {arguments}");
-                    sb.AppendLine($">nodetool {arguments}");
+                    AgentContext.Instance.LogInfo($"开始执行命令：{arguments}");
+                    sb.AppendLine($">{arguments}");
                     bool waitResult = false;
                     var executeTask = Task.Run(() =>
                     {
@@ -79,17 +79,17 @@ namespace YiQiDong.Cassandra.Functions
                         log => sb.AppendLine(log),
                         argumentsSegments);
                     });
-                    waitResult = executeTask.Wait(2000);
+                    waitResult = executeTask.Wait(5000);
                     executeTask.ContinueWith(t =>
                     {
                         if (waitResult)
                         {
-                            AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}");
+                            AgentContext.Instance.LogInfo($"执行命令完成：{arguments}");
                         }
                         else
                         {
                             File.WriteAllText(resultFile, sb.ToString());
-                            AgentContext.Instance.LogInfo($"执行命令完成：nodetool {arguments}，执行结果输出文件：{resultFile}");
+                            AgentContext.Instance.LogInfo($"执行命令完成：{arguments}，执行结果输出文件：{resultFile}");
                         }
                     });
                     if (waitResult)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using YiQiDong.Agent;
@@ -31,7 +32,7 @@ namespace YiQiDong.Cassandra
             AddFunction(new Functions.Config(imageFolder, ContainerFolder));
             AddFunction(new Functions.UserManage(imageFolder), true);
             AddFunction(new Functions.CqlQuery());
-            AddFunction(new Functions.NodeTool(ContainerFolder), true);
+            AddFunction(new Functions.CassandraTool(ContainerFolder), true);
             AddFunction(new Functions.AutoCleanup(ContainerFolder), true);
         }
 
@@ -173,11 +174,13 @@ namespace YiQiDong.Cassandra
             }
         }
 
-        public void RunNodeTool(Action<string> pushLog, params string[] args)
+        public void RunNodeTool(Action<string> pushLog, params string[] commandAndArgs)
         {
             var var_JAVA_HOME = "";
             var process_filename = "";
             var process_argument_list = new List<string>();
+            var command = commandAndArgs[0];
+            var args = commandAndArgs.Skip(1).ToArray();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -185,7 +188,7 @@ namespace YiQiDong.Cassandra
                 {
                     case Architecture.X64:
                         var_JAVA_HOME = "jre_windows_x64";
-                        process_filename = Path.Combine(imageFolder, "bin", "nodetool.bat");
+                        process_filename = Path.Combine(imageFolder, "bin", $"{command}.bat");
                         break;
                     default:
                         outputNotSupportOsAndArchitecture();
@@ -199,17 +202,17 @@ namespace YiQiDong.Cassandra
                     case Architecture.X64:
                         var_JAVA_HOME = "jre_linux_x64";
                         process_filename = "sh";
-                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", command));
                         break;
                     case Architecture.Arm64:
                         var_JAVA_HOME = "jre_linux_arm64";
                         process_filename = "sh";
-                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", command));
                         break;
                     case Architecture.Arm:
                         var_JAVA_HOME = "jre_linux_arm";
                         process_filename = "sh";
-                        process_argument_list.Add(Path.Combine(imageFolder, "bin", "nodetool"));
+                        process_argument_list.Add(Path.Combine(imageFolder, "bin", command));
                         break;
                     default:
                         outputNotSupportOsAndArchitecture();

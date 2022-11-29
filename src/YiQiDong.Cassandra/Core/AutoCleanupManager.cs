@@ -59,7 +59,7 @@ namespace YiQiDong.Cassandra.Core
                     AgentContext.Instance.LogInfo($"[定时清理快照]开始清理快照。。。");
                     if (Agent.Instance.ContainerInfo.AutoStart)
                     {
-                        Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "clearsnapshot");
+                        Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "nodetool", "clearsnapshot");
                     }
                     else
                     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mono.Unix;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -57,6 +58,33 @@ namespace YiQiDong.Cassandra
             AgentContext.Instance.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
         }
 
+        private void checkAndSetUnixFileExecutePermissions(string file)
+        {
+            try
+            {
+                var fileInfo = new UnixFileInfo(file);
+                var permission = fileInfo.FileAccessPermissions;
+                //如果没有可执行权限
+                if (
+                    (permission & FileAccessPermissions.OtherExecute) != permission
+                    || (permission & FileAccessPermissions.GroupExecute) != permission
+                    || (permission & FileAccessPermissions.UserExecute) != permission)
+                {
+                    AgentContext.Instance.LogInfo($"文件[{file}]当前没有可执行权限，正在设置可执行权限。。。");
+                    permission |= FileAccessPermissions.OtherExecute;
+                    permission |= FileAccessPermissions.GroupExecute;
+                    permission |= FileAccessPermissions.UserExecute;
+                    fileInfo.FileAccessPermissions = permission;
+                    AgentContext.Instance.LogInfo($"文件[{file}]设置可执行权限成功！");
+                }
+                AgentContext.Instance.LogInfo($"检测通过，文件[{file}]拥有可执行权限。");
+            }
+            catch (Exception ex)
+            {
+                AgentContext.Instance.LogWarn($"检测设置文件[{file}]可执行权限失败，原因：" + ExceptionUtils.GetExceptionString(ex));
+            }
+        }
+
         private void innnerStart()
         {
             if (Process != null)
@@ -103,6 +131,8 @@ namespace YiQiDong.Cassandra
                 }
                 process_filename = "sh";
                 process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
+                //检测设置java文件可执行权限
+                checkAndSetUnixFileExecutePermissions(Path.Combine(imageFolder, var_JAVA_HOME, "bin", "java"));
 
                 //检测是否支持free命令
                 AgentContext.Instance.LogInfo("正在检测是否支持常用Linux命令...");
@@ -124,6 +154,8 @@ namespace YiQiDong.Cassandra
                     AgentContext.Instance.LogInfo($"正在安装busybox...");
                     var desBusyboxPath = "/usr/bin/busybox";
                     File.Copy(srcBusyboxPath, desBusyboxPath, true);
+                    //检测设置busybox文件可执行权限
+                    checkAndSetUnixFileExecutePermissions(desBusyboxPath);
                     var busyboxProcess = Process.Start(desBusyboxPath, "--install");
                     busyboxProcess.WaitForExit();
                     if (busyboxProcess.ExitCode == 0)

@@ -8,9 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CassandraCSharpDriver" Version="3.18.0" />
+    <PackageReference Include="CassandraCSharpDriver" Version="3.19.2" />
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="ncrontab" Version="3.3.1" />
-    <PackageReference Include="YiQiDong.Agent" Version="2.2.14" />
+    <PackageReference Include="YiQiDong.Agent" Version="2.2.18" />
   </ItemGroup>
 
   <ItemGroup>

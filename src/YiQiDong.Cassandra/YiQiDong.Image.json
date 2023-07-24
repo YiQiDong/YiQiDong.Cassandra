@@ -4,6 +4,5 @@
   "Description": "Cassandra是一个混合型的非关系的数据库，类似于Google的BigTable。镜像内容：Cassandra 3.11.11 + Oracle JRE 1.8.0_191",
   "Tags": [ "数据库" ],
   "Platform": [ "win_x64", "linux_x64", "linux_arm64", "linux_arm" ],
-  "AgentStartup": "YiQiDong.Cassandra.dll",
-  "AgentStartup_Windows": "YiQiDong.Cassandra.exe"
+  "AgentStartup": "YiQiDong.Cassandra.dll"
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using YiQiDong.Agent;
 using YiQiDong.Cassandra.Utils;
 using YiQiDong.Core;
 using YiQiDong.Protocol.V1.Model;
@@ -247,7 +248,7 @@ namespace YiQiDong.Cassandra.Functions
 
         public override FieldForGet[] Get()
         {
-            var isReadOnly = Agent.Instance.ContainerInfo.AutoStart;
+            var isReadOnly = AgentContext.Container.AutoStart;
             var list = innerGet(null, isReadOnly);
             if (!isReadOnly)
                 addSaveButton(list);

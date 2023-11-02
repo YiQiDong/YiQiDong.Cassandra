@@ -43,7 +43,7 @@ namespace YiQiDong.Cassandra.Core
             cts = new CancellationTokenSource();
             crontabSchedule = NCrontab.CrontabSchedule.Parse(Config.Trigger);
             nextOccurrenceTime = crontabSchedule.GetNextOccurrence(DateTime.Now);
-            AgentContext.Instance.LogInfo($"[定时清理管理器]已启动定时清理。初次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
+            AgentContext.LogInfo($"[定时清理管理器]已启动定时清理。初次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
             beginCleanup(cts.Token);
         }
 
@@ -56,18 +56,18 @@ namespace YiQiDong.Cassandra.Core
                 if (DateTime.Now >= nextOccurrenceTime)
                 {
                     //开始工作
-                    AgentContext.Instance.LogInfo($"[定时清理快照]开始清理快照。。。");
-                    if (Agent.Instance.ContainerInfo.AutoStart)
+                    AgentContext.LogInfo($"[定时清理快照]开始清理快照。。。");
+                    if (AgentContext.Container.AutoStart)
                     {
-                        Agent.Instance.RunNodeTool(AgentContext.Instance.LogInfo, "nodetool", "clearsnapshot");
+                        Agent.Instance.RunNodeTool(AgentContext.LogInfo, "nodetool", "clearsnapshot");
                     }
                     else
                     {
-                        AgentContext.Instance.LogInfo("[定时清理快照]容器当前未运行，已跳过此次清理。");
+                        AgentContext.LogInfo("[定时清理快照]容器当前未运行，已跳过此次清理。");
                     }
                     //设置下一次触发时间
                     nextOccurrenceTime = crontabSchedule.GetNextOccurrence(DateTime.Now);
-                    AgentContext.Instance.LogInfo($"[定时清理快照]清理快照完成，下次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
+                    AgentContext.LogInfo($"[定时清理快照]清理快照完成，下次清理时间为[{nextOccurrenceTime.ToString("yyyy-MM-dd HH:mm:ss")}]");
                 }
                 beginCleanup(token);
             });
@@ -79,7 +79,7 @@ namespace YiQiDong.Cassandra.Core
             {
                 cts?.Cancel();
                 cts = null;
-                AgentContext.Instance.LogInfo("[定时清理管理器]已停止定时清理。");
+                AgentContext.LogInfo("[定时清理管理器]已停止定时清理。");
             }
         }
 

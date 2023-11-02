@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using YiQiDong.Agent;
 using YiQiDong.Cassandra.Model;
 using YiQiDong.Cassandra.Utils;
 using YiQiDong.Core;
@@ -62,7 +63,7 @@ namespace YiQiDong.Cassandra.Functions
         {
             List<FieldForGet> list = new List<FieldForGet>();
             //当容器未启动时，此功能不可用
-            if (!Agent.Instance.ContainerInfo.AutoStart)
+            if (!AgentContext.Container.AutoStart)
             {
                 list.Add(new FieldForGet() { Name = "当前功能不可用", Description = $"容器尚未启动，该功能不可用，请先启动容器，然后再试。", Type = FieldType.Alert });
                 return list;

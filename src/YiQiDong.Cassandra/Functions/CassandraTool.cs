@@ -70,7 +70,7 @@ namespace YiQiDong.Cassandra.Functions
 
                     var resultFile = System.IO.Path.Combine(containerFolder, $"执行结果_{argumentsSegments[0]}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.log");
                     StringBuilder sb = new StringBuilder();
-                    AgentContext.Instance.LogInfo($"开始执行命令：{arguments}");
+                    AgentContext.LogInfo($"开始执行命令：{arguments}");
                     sb.AppendLine($">{arguments}");
                     bool waitResult = false;
                     var executeTask = Task.Run(() =>
@@ -84,12 +84,12 @@ namespace YiQiDong.Cassandra.Functions
                     {
                         if (waitResult)
                         {
-                            AgentContext.Instance.LogInfo($"执行命令完成：{arguments}");
+                            AgentContext.LogInfo($"执行命令完成：{arguments}");
                         }
                         else
                         {
                             File.WriteAllText(resultFile, sb.ToString());
-                            AgentContext.Instance.LogInfo($"执行命令完成：{arguments}，执行结果输出文件：{resultFile}");
+                            AgentContext.LogInfo($"执行命令完成：{arguments}，执行结果输出文件：{resultFile}");
                         }
                     });
                     if (waitResult)

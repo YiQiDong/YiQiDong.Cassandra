@@ -1,10 +1,10 @@
 ﻿{
   "DefaultId": "Cassandra",
   "Name": "Cassandra",
-  "Version": "3.11.11",
+  "Version": "3.11.16",
   "Description": "Cassandra是一个混合型的非关系的数据库，类似于Google的BigTable。",
   "Tags": [ "数据库" ],
   "Platform": [ "any" ],
-  "Runtime": [ "dotnet-sdk-6.0", "java-jre-1.8" ],
+  "Runtime": [ "dotnet-6.0", "java-1.8" ],
   "AgentStartup": "YiQiDong.Cassandra.dll"
 }

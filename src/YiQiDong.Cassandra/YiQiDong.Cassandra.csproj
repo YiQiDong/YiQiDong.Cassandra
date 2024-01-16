@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="CassandraCSharpDriver" Version="3.19.5" />
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="ncrontab" Version="3.3.3" />
     <PackageReference Include="YiQiDong.Core" Version="2.3.8" />
   </ItemGroup>

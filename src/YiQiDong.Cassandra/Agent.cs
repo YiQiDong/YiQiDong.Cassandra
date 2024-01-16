@@ -1,5 +1,4 @@
-﻿using Mono.Unix;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,7 +9,6 @@ using YiQiDong.Agent;
 using YiQiDong.Cassandra.Utils;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
-using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra
 {
@@ -58,33 +56,6 @@ namespace YiQiDong.Cassandra
         private void outputNotSupportOsAndArchitecture()
         {
             AgentContext.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
-        }
-
-        private void checkAndSetUnixFileExecutePermissions(string file)
-        {
-            try
-            {
-                var fileInfo = new UnixFileInfo(file);
-                var permission = fileInfo.FileAccessPermissions;
-                //如果没有可执行权限
-                if (
-                    (permission & FileAccessPermissions.OtherExecute) != permission
-                    || (permission & FileAccessPermissions.GroupExecute) != permission
-                    || (permission & FileAccessPermissions.UserExecute) != permission)
-                {
-                    AgentContext.LogInfo($"文件[{file}]当前没有可执行权限，正在设置可执行权限。。。");
-                    permission |= FileAccessPermissions.OtherExecute;
-                    permission |= FileAccessPermissions.GroupExecute;
-                    permission |= FileAccessPermissions.UserExecute;
-                    fileInfo.FileAccessPermissions = permission;
-                    AgentContext.LogInfo($"文件[{file}]设置可执行权限成功！");
-                }
-                AgentContext.LogInfo($"检测通过，文件[{file}]拥有可执行权限。");
-            }
-            catch (Exception ex)
-            {
-                AgentContext.LogWarn($"检测设置文件[{file}]可执行权限失败，原因：" + ExceptionUtils.GetExceptionString(ex));
-            }
         }
 
         private void innnerStart()

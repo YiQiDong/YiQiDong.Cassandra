@@ -6,5 +6,6 @@
   "Tags": [ "数据库" ],
   "Platform": [ "any" ],
   "Runtime": [ "dotnet-6.0", "java-8" ],
+  "BuildTime": "2024-03-06 18:44:00",
   "AgentStartup": "YiQiDong.Cassandra.dll"
 }

@@ -308,7 +308,11 @@ namespace YiQiDong.Cassandra.Functions
                     }
                     YamlFileUtils.Save(containerConfigFile, getDictFromFields(request.Fields));
                     //保存成功后重新加载配置文件
-                    RefreshProperties(dataFolder);
+                    if (string.IsNullOrEmpty(dataFolder))
+                        RefreshProperties(containerFolder);
+                    else
+                        RefreshProperties(dataFolder);
+
                     list.Add(new FieldForGet()
                     {
                         Name = "保存成功",

@@ -54,8 +54,8 @@ namespace YiQiDong.Cassandra
         }
 
         private void outputNotSupportOsAndArchitecture()
-        {
-            AgentContext.LogWarn($"不支持的操作系统[{RuntimeInformation.OSDescription}]+平台架构[{RuntimeInformation.OSArchitecture}]。");
+        {                        
+            AgentContext.LogWarn($"不支持的平台[{RuntimeUtils.GetCurrentRID()}]。");
         }
 
         private void innnerStart()
@@ -70,11 +70,16 @@ namespace YiQiDong.Cassandra
             var process_filename = "";
             var process_argument_list = new List<string>();
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
                 process_filename = Path.Combine(imageFolder, "bin", "cassandra.bat");
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (OperatingSystem.IsMacOS())
+            {
+                process_filename = "sh";
+                process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));                
+            }
+            else if (OperatingSystem.IsLinux())
             {
                 process_filename = "sh";
                 process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));

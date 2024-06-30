@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YiQiDong.Cassandra", "YiQiDong.Cassandra\YiQiDong.Cassandra.csproj", "{C1BB8A3A-A822-4176-8601-D52BAD40EC2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinNodetool", "WinNodetool\WinNodetool.csproj", "{69F351FB-0534-4D1E-9EDD-37DA6393F41A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{C1BB8A3A-A822-4176-8601-D52BAD40EC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1BB8A3A-A822-4176-8601-D52BAD40EC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1BB8A3A-A822-4176-8601-D52BAD40EC2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69F351FB-0534-4D1E-9EDD-37DA6393F41A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69F351FB-0534-4D1E-9EDD-37DA6393F41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69F351FB-0534-4D1E-9EDD-37DA6393F41A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69F351FB-0534-4D1E-9EDD-37DA6393F41A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

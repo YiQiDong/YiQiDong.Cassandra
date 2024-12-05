@@ -54,7 +54,7 @@ namespace YiQiDong.Cassandra
         }
 
         private void outputNotSupportOsAndArchitecture()
-        {                        
+        {
             AgentContext.LogWarn($"不支持的平台[{RuntimeUtils.GetCurrentRID()}]。");
         }
 
@@ -69,6 +69,7 @@ namespace YiQiDong.Cassandra
 
             var process_filename = "";
             var process_argument_list = new List<string>();
+            var environmentVariables = new Dictionary<string, string>();
 
             if (OperatingSystem.IsWindows())
             {
@@ -77,12 +78,14 @@ namespace YiQiDong.Cassandra
             else if (OperatingSystem.IsMacOS())
             {
                 process_filename = "sh";
-                process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));                
+                process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
+                environmentVariables["LANG"] = "C";
             }
             else if (OperatingSystem.IsLinux())
             {
                 process_filename = "sh";
                 process_argument_list.Add(Path.Combine(imageFolder, "bin", "cassandra"));
+                environmentVariables["LANG"] = "C";
 
                 //检测是否支持free命令
                 AgentContext.LogInfo("正在检测是否支持常用Linux命令...");
@@ -121,7 +124,9 @@ namespace YiQiDong.Cassandra
                 psi.UseShellExecute = false;
                 psi.WorkingDirectory = dataFolder;
                 psi.EnvironmentVariables["CONTAINER_HOME"] = dataFolder;
-
+                if (environmentVariables.Count > 0)
+                    foreach (var item in environmentVariables)
+                        psi.EnvironmentVariables[item.Key] = item.Value;
                 AgentContext.LogInfo("正在启动工作进程...");
                 Process = Process.Start(psi);
                 Process.EnableRaisingEvents = true;

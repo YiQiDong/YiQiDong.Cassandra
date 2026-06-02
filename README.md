@@ -1,3 +1,3 @@
 # YiQiDong.Cassandra
 
-适用于弈启动的Cassandra项目
+适用于易启动的Cassandra项目

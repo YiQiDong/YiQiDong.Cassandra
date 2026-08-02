@@ -5,7 +5,8 @@
   "Description": "Cassandra是一个混合型的非关系的数据库，类似于Google的BigTable。",
   "Tags": [ "数据库" ],
   "Platform": [ "any" ],
-  "Runtime": [ "dotnet-8.0", "java-8" ],
-  "BuildTime": "2024-12-05 10:52:00",
+  "Runtime": [ "dotnet-10.0", "java-8" ],
+  "BuildTime": "2026-08-02 09:33:08",
+  "AgentExecute": "dotnet",
   "AgentStartup": "YiQiDong.Cassandra.dll"
 }

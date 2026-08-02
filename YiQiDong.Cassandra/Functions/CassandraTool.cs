@@ -1,21 +1,20 @@
-﻿using Cassandra.DataStax.Graph;
-using Quick.Fields;
+﻿using Quick.Fields;
+using Quick.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using YiQiDong.Agent;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions
 {
     class CassandraTool : AbstractFunction
     {
+        public override bool IsVisiable() => AgentContext.Container.AutoStart;
         private string containerFolder;
 
         public CassandraTool(string containerFolder)
@@ -25,7 +24,14 @@ namespace YiQiDong.Cassandra.Functions
 
         public override string Name => "Cassandra工具";
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            if (request == null)
+                return Get();
+            return Post(request);
+        }
+
+        public FieldForGet[] Get()
         {
             var list = new List<FieldForGet>();
             list.Add(new FieldForGet()
@@ -52,7 +58,7 @@ namespace YiQiDong.Cassandra.Functions
             return list.ToArray();
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        public FieldForGet[] Post(FunctionRequest request)
         {
             var list = Get().ToList();
             if (request.IsFieldIdsMatch("CommonCommands"))

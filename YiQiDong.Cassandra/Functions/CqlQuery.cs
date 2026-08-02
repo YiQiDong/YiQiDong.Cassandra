@@ -109,12 +109,19 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            if (request == null)
+                return Get();
+            return Post(request);
+        }
+
+        public FieldForGet[] Get()
         {
             return innerGet(null).ToArray();
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        public FieldForGet[] Post(FunctionRequest request)
         {
             var list = innerGet(request);
 

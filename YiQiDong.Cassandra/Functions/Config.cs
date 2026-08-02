@@ -246,7 +246,14 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            if (request == null)
+                return Get();
+            return Post(request);
+        }
+
+        public FieldForGet[] Get()
         {
             var isReadOnly = AgentContext.Container.AutoStart;
             var list = innerGet(null, isReadOnly);
@@ -278,7 +285,7 @@ namespace YiQiDong.Cassandra.Functions
             return dict;
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        public FieldForGet[] Post(FunctionRequest request)
         {
             if (request.IsFieldIdsMatch("tab", "Basic", "DataFolder"))
             {

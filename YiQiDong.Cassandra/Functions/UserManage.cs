@@ -22,6 +22,7 @@ namespace YiQiDong.Cassandra.Functions
 
         public override string Name => "用户管理";
         public static UserManage Instance { get; private set; }
+        public override bool IsVisiable() => AgentContext.Container.AutoStart;
 
         private string imageFolder;
         private List<UserInfo> _userInfoList;
@@ -113,7 +114,14 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            if (request == null)
+                return Get();
+            return Post(request);
+        }
+        
+        public FieldForGet[] Get()
         {
             return innerGet(null).ToArray();
         }
@@ -131,7 +139,7 @@ namespace YiQiDong.Cassandra.Functions
             return null;
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        public FieldForGet[] Post(FunctionRequest request)
         {
             var connectInfo = Config.Instance.GetConnectInfo();
             var connectUserInfo = GetConnectUserInfo();

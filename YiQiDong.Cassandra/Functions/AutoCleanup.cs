@@ -1,4 +1,5 @@
 ﻿using Quick.Fields;
+using Quick.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using YiQiDong.Agent;
 using YiQiDong.Cassandra.Core;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
@@ -16,7 +18,7 @@ namespace YiQiDong.Cassandra.Functions
     class AutoCleanup : AbstractFunction
     {
         public override string Name => "定时清理快照";
-
+        public override bool IsVisiable() => AgentContext.Container.AutoStart;
         private string containerFolder;
         public AutoCleanup(string containerFolder)
         {
@@ -69,12 +71,19 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            if (request == null)
+                return Get();
+            return Post(request);
+        }
+
+        public FieldForGet[] Get()
         {
             return innerGet(null).ToArray();
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        public FieldForGet[] Post(FunctionRequest request)
         {
             var list = innerGet(request);
             if (request.IsFieldIdsMatch("Save"))

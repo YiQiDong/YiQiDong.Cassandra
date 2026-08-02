@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Quick.Utils;
 using YiQiDong.Agent;
 using YiQiDong.Cassandra.Utils;
 using YiQiDong.Core;
@@ -30,10 +31,10 @@ namespace YiQiDong.Cassandra
                 ContainerFolder = AgentContext.Container.ContainerFolder;
 
                 AddFunction(new Functions.Config(imageFolder, ContainerFolder));
-                AddFunction(new Functions.UserManage(imageFolder), true);
+                AddFunction(new Functions.UserManage(imageFolder));
                 AddFunction(new Functions.CqlQuery());
-                AddFunction(new Functions.CassandraTool(ContainerFolder), true);
-                AddFunction(new Functions.AutoCleanup(ContainerFolder), true);
+                AddFunction(new Functions.CassandraTool(ContainerFolder));
+                AddFunction(new Functions.AutoCleanup(ContainerFolder));
             }
         }
 
@@ -136,7 +137,7 @@ namespace YiQiDong.Cassandra
                 Process.BeginErrorReadLine();
                 AgentContext.LogInfo($"工作进程[Id:{Process.Id},Name:{Process.ProcessName}]已经启动。");
                 Process.Exited += Process_Exited;
-                RaiseEvent_FunctionListChanged();
+                AgentContext.RaiseEvent_FunctionListChanged();
             }
             catch (Exception ex)
             {
@@ -235,7 +236,7 @@ namespace YiQiDong.Cassandra
         public override void Stop()
         {
             Core.AutoCleanupManager.Instance.Stop();
-            RaiseEvent_FunctionListChanged();
+            AgentContext.RaiseEvent_FunctionListChanged();
             if (Process == null)
                 return;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

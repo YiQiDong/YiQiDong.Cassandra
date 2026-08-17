@@ -34,7 +34,7 @@ namespace YiQiDong.Cassandra
                 AddFunction(new Functions.UserManage(imageFolder));
                 AddFunction(new Functions.CqlQuery());
                 AddFunction(new Functions.CassandraTool(ContainerFolder));
-                AddFunction(new Functions.AutoCleanup(ContainerFolder));
+                AddFunction(new Functions.AutoCleanup());
             }
         }
 

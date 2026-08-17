@@ -2,15 +2,9 @@
 using Quick.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using YiQiDong.Agent;
 using YiQiDong.Cassandra.Core;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Cassandra.Functions
@@ -19,12 +13,7 @@ namespace YiQiDong.Cassandra.Functions
     {
         public override string Name => "定时清理快照";
         public override bool IsVisiable() => AgentContext.Container.AutoStart;
-        private string containerFolder;
-        public AutoCleanup(string containerFolder)
-        {
-            this.containerFolder = containerFolder;
-        }
-
+        
         private List<FieldForGet> innerGet(FunctionRequest request)
         {
             var list = new List<FieldForGet>();
@@ -71,19 +60,19 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 return Get();
             return Post(request);
         }
 
-        public FieldForGet[] Get()
+        public List<FieldForGet> Get()
         {
-            return innerGet(null).ToArray();
+            return innerGet(null);
         }
 
-        public FieldForGet[] Post(FunctionRequest request)
+        public List<FieldForGet> Post(FunctionRequest request)
         {
             var list = innerGet(request);
             if (request.IsFieldIdsMatch("Save"))
@@ -121,7 +110,7 @@ namespace YiQiDong.Cassandra.Functions
                     });
                 }
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

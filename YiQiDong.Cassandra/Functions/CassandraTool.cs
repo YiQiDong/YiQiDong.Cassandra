@@ -24,14 +24,14 @@ namespace YiQiDong.Cassandra.Functions
 
         public override string Name => "Cassandra工具";
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 return Get();
             return Post(request);
         }
 
-        public FieldForGet[] Get()
+        public List<FieldForGet> Get()
         {
             var list = new List<FieldForGet>();
             list.Add(new FieldForGet()
@@ -55,10 +55,10 @@ namespace YiQiDong.Cassandra.Functions
                 Type = FieldType.InputText
             });
             list.Add(new FieldForGet() { Id = "Execute", Name = "发送指令", Type = FieldType.Button });
-            return list.ToArray();
+            return list;
         }
 
-        public FieldForGet[] Post(FunctionRequest request)
+        public List<FieldForGet> Post(FunctionRequest request)
         {
             var list = Get().ToList();
             if (request.IsFieldIdsMatch("CommonCommands"))
@@ -130,7 +130,7 @@ namespace YiQiDong.Cassandra.Functions
                     });
                 }
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

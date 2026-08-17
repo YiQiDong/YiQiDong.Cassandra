@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using YiQiDong.Agent;
 using YiQiDong.Cassandra.Model;
 using YiQiDong.Cassandra.Utils;
@@ -114,16 +113,16 @@ namespace YiQiDong.Cassandra.Functions
             return list;
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 return Get();
             return Post(request);
         }
         
-        public FieldForGet[] Get()
+        public List<FieldForGet> Get()
         {
-            return innerGet(null).ToArray();
+            return innerGet(null);
         }
 
         public UserInfo GetConnectUserInfo(string noUseAccount = null)
@@ -139,7 +138,7 @@ namespace YiQiDong.Cassandra.Functions
             return null;
         }
 
-        public FieldForGet[] Post(FunctionRequest request)
+        public List<FieldForGet> Post(FunctionRequest request)
         {
             var connectInfo = Config.Instance.GetConnectInfo();
             var connectUserInfo = GetConnectUserInfo();
@@ -206,7 +205,7 @@ namespace YiQiDong.Cassandra.Functions
                 else
                     list.Value.Add(retField);
             }
-            return list.Value.ToArray();
+            return list.Value;
         }
     }
 }

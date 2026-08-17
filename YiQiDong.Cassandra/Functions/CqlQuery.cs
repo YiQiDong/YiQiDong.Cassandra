@@ -77,7 +77,7 @@ namespace YiQiDong.Cassandra.Functions
                 Id = "ConnectionInfo",
                 Name = "连接信息",
                 Type = FieldType.ContainerGroup,
-                Children = connectionFieldChildren.ToArray()
+                Children = connectionFieldChildren
             });
 
             spliterFieldChildren.Add(new FieldForGet()
@@ -85,8 +85,8 @@ namespace YiQiDong.Cassandra.Functions
                 Id = "Query",
                 Name = "查询",
                 Type = FieldType.ContainerGroup,
-                Children = new FieldForGet[]
-                {
+                Children = 
+                [
                     new FieldForGet()
                     {
                         Id = "Script",
@@ -97,31 +97,31 @@ namespace YiQiDong.Cassandra.Functions
                         Value = request == null ? null : request.GetFieldValue("tab", "Query","Script")
                     },
                     new FieldForGet() { Id = "Execute", Name = "执行", Type = FieldType.Button }
-                }
+                ]
             });
 
             list.Add(new FieldForGet()
             {
                 Id = "tab",
                 Type = FieldType.ContainerTab,
-                Children = spliterFieldChildren.ToArray()
+                Children = spliterFieldChildren
             });
             return list;
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 return Get();
             return Post(request);
         }
 
-        public FieldForGet[] Get()
+        public List<FieldForGet> Get()
         {
-            return innerGet(null).ToArray();
+            return innerGet(null);
         }
 
-        public FieldForGet[] Post(FunctionRequest request)
+        public List<FieldForGet> Post(FunctionRequest request)
         {
             var list = innerGet(request);
 
@@ -131,7 +131,7 @@ namespace YiQiDong.Cassandra.Functions
                 if (string.IsNullOrEmpty(script))
                 {
                     list.Add(new FieldForGet() { Name = "错误", Description = "未输入要执行的脚本。", Type = FieldType.MessageBox });
-                    return list.ToArray();
+                    return list;
                 }
                 string host = null;
                 int port = 0;
@@ -202,7 +202,7 @@ namespace YiQiDong.Cassandra.Functions
                     list.Add(new FieldForGet() { Name = "错误", Description = ex.Message, Type = FieldType.Alert });
                 }                
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

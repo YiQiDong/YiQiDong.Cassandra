@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="CassandraCSharpDriver" Version="3.22.0" />
     <PackageReference Include="NCrontab.Signed" Version="3.4.0" />
-    <PackageReference Include="YiQiDong.Core" Version="2026.29.801" />
+    <PackageReference Include="YiQiDong.Core" Version="2026.37.813" />
   </ItemGroup>
 
   <ItemGroup>

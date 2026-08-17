@@ -160,7 +160,7 @@ namespace YiQiDong.Cassandra.Functions
                 Id = "Basic",
                 Name = "基本",
                 Type = FieldType.ContainerGroup,
-                Children = basicFieldChildren.ToArray()
+                Children = basicFieldChildren
             });
 
             if (isDataFolderExists)
@@ -187,7 +187,7 @@ namespace YiQiDong.Cassandra.Functions
                 Id = "Security",
                 Name = "安全",
                 Type = FieldType.ContainerGroup,
-                Children = securityFieldChildren.ToArray()
+                Children = securityFieldChildren
             });
             if (isDataFolderExists)
             {
@@ -235,34 +235,34 @@ namespace YiQiDong.Cassandra.Functions
                 Id = "Cluster",
                 Name = "群集",
                 Type = FieldType.ContainerGroup,
-                Children = clusterFieldChildren.ToArray()
+                Children = clusterFieldChildren
             });
             list.Add(new FieldForGet()
             {
                 Id = "tab",
                 Type = FieldType.ContainerTab,
-                Children = spliterFieldChildren.ToArray()
+                Children = spliterFieldChildren
             });
             return list;
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 return Get();
             return Post(request);
         }
 
-        public FieldForGet[] Get()
+        public List<FieldForGet> Get()
         {
             var isReadOnly = AgentContext.Container.AutoStart;
             var list = innerGet(null, isReadOnly);
             if (!isReadOnly)
                 addSaveButton(list);
-            return list.ToArray();
+            return list;
         }
 
-        private void travelFields(FieldForPost[] fields, Action<FieldForPost> action)
+        private void travelFields(IEnumerable<FieldForPost> fields, Action<FieldForPost> action)
         {
             if (fields == null)
                 return;
@@ -273,7 +273,7 @@ namespace YiQiDong.Cassandra.Functions
             }
         }
 
-        private Dictionary<string, string> getDictFromFields(FieldForPost[] fields)
+        private Dictionary<string, string> getDictFromFields(IEnumerable<FieldForPost> fields)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
             travelFields(fields, field =>
@@ -285,7 +285,7 @@ namespace YiQiDong.Cassandra.Functions
             return dict;
         }
 
-        public FieldForGet[] Post(FunctionRequest request)
+        public List<FieldForGet> Post(FunctionRequest request)
         {
             if (request.IsFieldIdsMatch("tab", "Basic", "DataFolder"))
             {
@@ -294,7 +294,7 @@ namespace YiQiDong.Cassandra.Functions
                     RefreshProperties(containerFolder);
                 else
                     RefreshProperties(dataFolder);
-                request.Fields = innerGet(null).Select(t => t.ToPost()).ToArray();
+                request.Fields = innerGet(null).Select(t => t.ToPost()).ToList();
                 request.Fields[0].Children[0].Children[0].Value = dataFolder;
             }
             var list = innerGet(request);
@@ -338,7 +338,7 @@ namespace YiQiDong.Cassandra.Functions
                 }
             }
             addSaveButton(list);
-            return list.ToArray();
+            return list;
         }
 
         private void addSaveButton(List<FieldForGet> list)
